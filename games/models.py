@@ -5,6 +5,7 @@ from players.models import Player
 GAME_SIZE = 10
 
 class Game(models.Model):
+    """Model containing information on a single game of Battleships."""
     turn = models.IntegerField(default=0)
 
     def __str__(self):
@@ -17,6 +18,7 @@ class Game(models.Model):
 
 
 class Team(models.Model):
+    """Model containing Player information specific to a single Game."""
     player = models.ForeignKey(Player)
     game = models.ForeignKey(Game)
     last_turn = models.IntegerField(default=0)
@@ -29,6 +31,7 @@ class Team(models.Model):
 
 
 class Shot(models.Model):
+    """Model containing information of an attack."""
     game = models.ForeignKey(Game)
     attacking_team = models.ForeignKey(Team, related_name='attacking_team')
     defending_team = models.ForeignKey(Team, related_name='defending_team')
@@ -47,6 +50,7 @@ class Shot(models.Model):
 
 
 class Ship(models.Model):
+    """Model containing information of a single ship on the game board."""
     LENGTHS = [2, 3, 3, 4, 5]
 
     team = models.ForeignKey(Team)
@@ -83,6 +87,7 @@ class Ship(models.Model):
         )
 
     def get_tiles(self):
+        """Returns a list of all tiles occupied by a ship."""
         tiles = []
         for i in range(0, self.length):
             if self.direction == Ship.CARDINAL_DIRECTIONS['NORTH']:

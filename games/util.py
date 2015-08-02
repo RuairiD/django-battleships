@@ -4,6 +4,7 @@ from games.models import GAME_SIZE
 from games.models import Ship
 
 def are_ships_overlapping(ship1, ship2):
+    """Checks if two ships share tiles on the board."""
     for ship1_tile in ship1.get_tiles():
         for ship2_tile in ship2.get_tiles():
             if ship1_tile == ship2_tile:
@@ -11,10 +12,12 @@ def are_ships_overlapping(ship1, ship2):
     return False
 
 def is_team_next(team, game):
+    """Checks if it is a team's turn to move next."""
     alive_teams = game.team_set.filter(alive=True)
     return (team == min(alive_teams, key=lambda team:team.last_turn))
 
 def is_valid_ship_position(ship):
+    """Checks if ship is entirely contained on the board."""
     y_inc = 0
     x_inc = 0
 
@@ -36,6 +39,8 @@ def is_valid_ship_position(ship):
     return True
 
 def make_ships(team, lengths):
+    """Generates ships of predetermined lengths and randomly arranges them to fit
+    on the board."""
     ships = []
     for length in lengths:
         overlapping = False

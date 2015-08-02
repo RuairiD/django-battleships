@@ -82,6 +82,9 @@ class CreateGameView(View):
                 user_player = Player.objects.get(user=request.user)
                 opponent_player = Player.objects.get(user=opponent_user)
 
+                # Create a game plus teams and ships for both players
+                # Creation in Game -> Team -> Ships order is important to satisfy
+                # ForeignKey dependencies.
                 game = Game()
                 game.save()
                 user_team = Team(player=user_player, game=game, last_turn=-2)
@@ -125,20 +128,18 @@ class AttackView(View):
 
                 player = Player.objects.get(user=request.user)
 
+                # Verify the player is involved in this game
                 teams = game.team_set.all()
-
                 player_team = None
                 for team in teams:
                     if team.player == player:
                         player_team = team
-
                 if player_team is None:
                     raise Http404("Player is not authorised.")
 
+                # Verify it is the player's turn to attack
                 is_next = is_team_next(player_team, game)
-
                 if not is_next:
-                    # Not their turn
                     messages.error(request, 'It\'s not your turn!')
                     return HttpResponseRedirect(reverse('game', args=[game_id]))
 
