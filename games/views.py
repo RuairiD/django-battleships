@@ -73,7 +73,10 @@ class CreateGameView(View):
                 try:
                     opponent_user = User.objects.get(username=opponent_username)
                 except User.DoesNotExist:
-                    messages.error(request, 'User does not exist! Are you sure the username is correct?')
+                    messages.error(
+                        request,
+                        'User does not exist! Are you sure the username is correct?'
+                    )
                     context = {
                         'form': form
                     }
@@ -200,7 +203,7 @@ class AttackView(View):
                 if other_team_hit:
                     messages.success(request, 'Hit!')
                     if other_team_defeated:
-                        messages.success(request, 'You defeated {name}!'.format(other_team.player.user.username))
+                        messages.success(request, 'You defeated {name}!'.format(name=other_team.player.user.username))
                 else:
                     messages.warning(request, 'Miss!')
                 return HttpResponseRedirect(reverse('game', args=[game_id]))
