@@ -1,0 +1,17 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+                <a class="close" data-dismiss="alert">×</a>
+                {{ message|safe }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <form action="{% url 'create_game' %}" method="post" class="form-horizontal">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn btn-default" value="Submit">
+    </form>
+{% endblock %}

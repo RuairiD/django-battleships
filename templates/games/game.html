@@ -1,0 +1,53 @@
+{% extends 'base/base.html' %}
+
+{% load attack_form %}
+{% load game_board %}
+
+{% block content %}
+{% for team in teams %}
+    <div class="board">
+        <h3>{{ team.player.user.username }}'s board{% if team.winner %} - Winner!{% elif not team.alive %} - defeated{% endif %}</h3>
+        <div class="well">
+            {% if team.player.user == request.user %}
+                {% render_player_board team %}
+            {% else %}
+                {% render_opponent_board team %}
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}
+<div class="board">
+    <h4>Key</h4>
+    <table class="game-key">
+        <tr>
+            <td>A0</td>
+            <td>Unattacked, unoccupied</td>
+        </tr>
+        <tr>
+            <td class="tile-occupied">A0</td>
+            <td>Unattacked, occupied</td>
+        </tr>
+        <tr>
+            <td class="tile-hit">A0</td>
+            <td>Attacked, unoccupied</td>
+        </tr>
+        <tr>
+            <td class="tile-occupied tile-hit">A0</td>
+            <td>Attacked, occupied</td>
+        </tr>
+    </table>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+            <a class="close" data-dismiss="alert">×</a>
+            {{ message|safe }}
+        </div>
+    {% endfor %}
+{% endif %}
+{% if is_player_next %}
+    <h3>It's your turn...</h3>
+    {% render_attack_form attack_form game_id %}
+{% endif %}
+{% endblock %}

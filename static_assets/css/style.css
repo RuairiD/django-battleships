@@ -1,0 +1,36 @@
+.header {
+    padding: 1em;
+    margin: 1em auto;
+}
+
+.header h1 {
+    margin: 0;
+    padding: 0.5em;
+}
+
+.board {
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+.board td {
+    padding: 0.2em;
+}
+
+.tile-hit {
+    color: #FF0000;
+}
+
+.tile-occupied {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
+.tile-occupied.tile-hit {
+    background-color: #000000;
+    color: #FF0000;
+}
+
+.game-key td {
+    padding: 0.2em;
+}

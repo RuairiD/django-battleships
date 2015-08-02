@@ -1,0 +1,8 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h2>{{ player.user.username }}</h2>
+<p><strong>Wins:</strong> {{ win_count }}</p>
+<p><strong>Losses:</strong> {{ loss_count }}</p>
+<p><strong>In Progress:</strong> {{ in_progress_count }}</p>
+{% endblock %}

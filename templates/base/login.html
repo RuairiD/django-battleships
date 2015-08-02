@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h1>Login</h1>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+            <a class="close" data-dismiss="alert">×</a>
+            {{ message|safe }}
+        </div>
+    {% endfor %}
+{% endif %}
+<form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <div class="form-group">
+        <label class="sr-only" for="username">Username</label>
+        <input type="text" class="form-control" name="username" id="username" placeholder="Username">
+    </div>
+    <div class="form-group">
+        <label class="sr-only" for="password">Password</label>
+        <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+    </div>
+    <button type="submit" class="btn">Sign in</button>
+</form>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <h3>Your Active Games</h3>
+        <ul>
+            {% for game in games %}
+                <li><a href="{% url 'game' game.id %}">
+                    Game {{ game.id }}
+                </a></li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'create_game' %}">
+            Start New Game
+        </a>
+    {% else %}
+        <h3>You're not logged in...</h3>
+        <ul>
+            <li><a href="{% url 'login' %}">
+                Login
+            </a></li>
+            <li><a href="{% url 'signup' %}">
+                Signup
+            </a></li>
+        </ul>
+    {% endif %}
+{% endblock %}

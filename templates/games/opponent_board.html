@@ -1,0 +1,18 @@
+<table>
+    {{ tiles }}
+    {% for row in team.tiles %}
+        <tr>
+            {% for tile in row %}
+                {% if tile.is_hit %}
+                    {% if tile.is_empty %}
+                        <td class="tile-hit">{{ tile.name }}</td>
+                    {% else %}
+                        <td class="tile-occupied tile-hit">{{ tile.name }}</td>
+                    {% endif %}
+                {% else %}
+                    <td>{{ tile.name }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
