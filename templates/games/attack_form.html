@@ -1,14 +1,14 @@
-<form action="{% url 'attack' %}" method="post" id="attack-form" class="form-inline">
+<form action="{% url 'attack' game_id %}" method="post" id="attack-form" class="form-inline">
     {% csrf_token %}
     <input type="hidden" name="game_id" value="{{ game_id }}"></input>
     <div class="form-group">
-        {{ attack_target_form.target_team }}
+        {{ attack_form.target_team }}
     </div>
     <div class="form-group">
-        {{ attack_target_form.target_x }}
+        {{ attack_form.target_x }}
     </div>
     <div class="form-group">
-        {{ attack_target_form.target_y }}
+        {{ attack_form.target_y }}
     </div>
     <input id="attack-form-submit" class="btn btn-default" type="submit" value="Shoot!">
 </form>

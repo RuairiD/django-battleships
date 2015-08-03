@@ -6,8 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
 
-from games.forms import AttackGameForm
-from games.forms import AttackTargetForm
+from games.forms import AttackForm
 from games.forms import CreateGameForm
 from games.models import Game
 from games.models import MAX_PLAYERS
@@ -53,11 +52,9 @@ class GameView(View):
                 'game_id': game_id,
                 'player_team': TeamPresenter.from_team(player_team, game),
                 'teams': team_presenters,
-                'attack_game_form': AttackGameForm(),
-                'attack_target_form': AttackTargetForm(other_teams=other_teams),
+                'attack_form': AttackForm(other_teams=other_teams),
                 'is_player_next': is_player_next
             }
-            print(context['attack_game_form'])
             return render(request, self.template_name, context)
         else:
             raise Http404("Player is not logged in.")
@@ -132,108 +129,102 @@ class CreateGameView(View):
 
 class AttackView(View):
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, game_id, *args, **kwargs):
         errors = []
         if request.user.is_authenticated():
-            game_form = AttackGameForm(request.POST)
-            if game_form.is_valid():
-                game_id = game_form.cleaned_data['game_id']
+            try:
+                game = Game.objects.get(pk=game_id)
+            except Game.DoesNotExist:
+                raise Http404("Game does not exist.")
 
-                try:
-                    game = Game.objects.get(pk=game_id)
-                except Game.DoesNotExist:
-                    raise Http404("Game does not exist.")
+            player = Player.objects.get(user=request.user)
 
-                player = Player.objects.get(user=request.user)
+            # Verify the player is involved in this game
+            teams = game.team_set.all()
+            player_team = None
+            for team in teams:
+                if team.player == player:
+                    player_team = team
+            if player_team is None:
+                raise Http404("Player is not authorised.")
 
-                # Verify the player is involved in this game
-                teams = game.team_set.all()
-                player_team = None
-                for team in teams:
-                    if team.player == player:
-                        player_team = team
-                if player_team is None:
-                    raise Http404("Player is not authorised.")
+            # Verify it is the player's turn to attack
+            is_next = is_team_next(player_team, game)
+            if not is_next:
+                messages.error(request, 'It\'s not your turn!')
+                return HttpResponseRedirect(reverse('game', args=[game_id]))
 
-                # Verify it is the player's turn to attack
-                is_next = is_team_next(player_team, game)
-                if not is_next:
-                    messages.error(request, 'It\'s not your turn!')
+            other_teams = []
+            for team in teams:
+                if team is not player_team and team.alive:
+                    other_teams.append(team)
+
+            attack_form = AttackForm(request.POST, other_teams=other_teams)
+            if attack_form.is_valid():
+                target_x = attack_form.cleaned_data['target_x']
+                target_y = attack_form.cleaned_data['target_y']
+                target_team = attack_form.cleaned_data['target_team']
+
+                other_team = Team.objects.get(pk=target_team)
+
+                # Verify shot hasn't already been attempted
+                past_shots = Shot.objects.filter(
+                    game=game,
+                    attacking_team=player_team,
+                    defending_team=other_team,
+                    x=target_x,
+                    y=target_y
+                )
+
+                if len(past_shots) > 0:
+                    messages.error(request, 'You\'ve already shot there!')
                     return HttpResponseRedirect(reverse('game', args=[game_id]))
 
-                other_teams = []
-                for team in teams:
-                    if team is not player_team and team.alive:
-                        other_teams.append(team)
+                shot = Shot(
+                    game=game,
+                    attacking_team=player_team,
+                    defending_team=other_team,
+                    x=target_x,
+                    y=target_y
+                )
+                shot.save()
 
-                target_form = AttackTargetForm(request.POST, other_teams=other_teams)
-                if target_form.is_valid():
-                    target_x = target_form.cleaned_data['target_x']
-                    target_y = target_form.cleaned_data['target_y']
-                    target_team = target_form.cleaned_data['target_team']
+                player_team.last_turn = game.turn
+                player_team.save()
 
-                    other_team = Team.objects.get(pk=target_team)
+                game.turn = game.turn + 1
+                game.save()
 
-                    # Verify shot hasn't already been attempted
-                    past_shots = Shot.objects.filter(
-                        game=game,
-                        attacking_team=player_team,
-                        defending_team=other_team,
-                        x=target_x,
-                        y=target_y
-                    )
+                # Check for hit
+                ship_tiles = set()
+                for ship in other_team.ship_set.all():
+                    ship_tiles.update(set(ship.get_tiles()))
+                other_team_hit = (int(target_x), int(target_y)) in ship_tiles
 
-                    if len(past_shots) > 0:
-                        messages.error(request, 'You\'ve already shot there!')
-                        return HttpResponseRedirect(reverse('game', args=[game_id]))
+                # Check for death
+                shots = Shot.objects.filter(
+                    game=game,
+                    defending_team=other_team
+                )
+                shots = set([(shot.x, shot.y) for shot in shots])
+                if len(shots.intersection(ship_tiles)) == len(ship_tiles):
+                    other_team.alive = False
+                    other_team.save()
+                other_team_defeated = not other_team.alive
 
-                    shot = Shot(
-                        game=game,
-                        attacking_team=player_team,
-                        defending_team=other_team,
-                        x=target_x,
-                        y=target_y
-                    )
-                    shot.save()
+                # Check for winner
+                alive_teams = game.team_set.filter(alive=True)
+                if len(alive_teams) == 1:
+                    alive_teams[0].winner = True
+                    alive_teams[0].save()
 
-                    player_team.last_turn = game.turn
-                    player_team.save()
-
-                    game.turn = game.turn + 1
-                    game.save()
-
-                    # Check for hit
-                    ship_tiles = set()
-                    for ship in other_team.ship_set.all():
-                        ship_tiles.update(set(ship.get_tiles()))
-                    other_team_hit = (int(target_x), int(target_y)) in ship_tiles
-
-                    # Check for death
-                    shots = Shot.objects.filter(
-                        game=game,
-                        defending_team=other_team
-                    )
-                    shots = set([(shot.x, shot.y) for shot in shots])
-                    if len(shots.intersection(ship_tiles)) == len(ship_tiles):
-                        other_team.alive = False
-                        other_team.save()
-                    other_team_defeated = not other_team.alive
-
-                    # Check for winner
-                    alive_teams = game.team_set.filter(alive=True)
-                    if len(alive_teams) == 1:
-                        alive_teams[0].winner = True
-                        alive_teams[0].save()
-
-                    if other_team_hit:
-                        messages.success(request, 'Hit!')
-                        if other_team_defeated:
-                            messages.success(request, 'You defeated {name}!'.format(name=other_team.player.user.username))
-                    else:
-                        messages.warning(request, 'Miss!')
-                    return HttpResponseRedirect(reverse('game', args=[game_id]))
+                if other_team_hit:
+                    messages.success(request, 'Hit!')
+                    if other_team_defeated:
+                        messages.success(request, 'You defeated {name}!'.format(name=other_team.player.user.username))
                 else:
-                    return HttpResponseRedirect('/')
+                    messages.warning(request, 'Miss!')
+                return HttpResponseRedirect(reverse('game', args=[game_id]))
             else:
                 return HttpResponseRedirect('/')
         else:

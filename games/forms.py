@@ -18,11 +18,8 @@ class CreateGameForm(forms.Form):
             self.fields[field_name].required = (i == 0)
 
 
-class AttackGameForm(forms.Form):
-    game_id = forms.IntegerField(widget=forms.HiddenInput())
-
-
-class AttackTargetForm(forms.Form):
+class AttackForm(forms.Form):
+    
     X_CHOICES = (
         (x, chr(x + ord('A'))) 
         for x in range(0,10)
@@ -36,7 +33,7 @@ class AttackTargetForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         other_teams = kwargs.pop('other_teams')
-        super(AttackTargetForm, self).__init__(*args, **kwargs)
+        super(AttackForm, self).__init__(*args, **kwargs)
         self.fields['target_x'].widget.attrs = {
             'class': 'form-control col-md-1'
         }
