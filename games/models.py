@@ -3,6 +3,7 @@ from django.db import models
 from players.models import Player
 
 GAME_SIZE = 10
+MAX_PLAYERS = 4
 
 class Game(models.Model):
     """Model containing information on a single game of Battleships."""
