@@ -3,6 +3,17 @@ from collections import namedtuple
 from games.models import GAME_SIZE
 from games.models import Shot
 from games.util import is_team_next
+from players.presentation import PlayerPresenter
+
+
+class GamePresenter(namedtuple('GamePresenter', ['id', 'teams'])):
+
+    @classmethod
+    def from_game(cls, game):
+        return cls(
+            id=game.id,
+            teams=[TeamPresenter.from_team(team, game) for team in game.team_set.all()],
+        )
 
 
 class TeamPresenter(namedtuple('TeamPresenter', ['player', 'is_next', 'winner', 'alive', 'tiles'])):
@@ -20,7 +31,7 @@ class TeamPresenter(namedtuple('TeamPresenter', ['player', 'is_next', 'winner', 
     @classmethod
     def from_team(cls, team, game):
         return cls(
-            player=team.player,
+            player=PlayerPresenter.from_player(team.player),
             is_next=is_team_next(team, game),
             winner=team.winner,
             alive=team.alive,

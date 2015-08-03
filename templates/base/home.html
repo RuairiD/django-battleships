@@ -6,7 +6,7 @@
         <ul>
             {% for game in games %}
                 <li><a href="{% url 'game' game.id %}">
-                    Game {{ game.id }}
+                    Game {{ game.id }} {% for team in game.teams %}{% if team.player.username != user.username %}vs. {{ team.player.username }} {% endif %}{% endfor %}
                 </a></li>
             {% endfor %}
         </ul>

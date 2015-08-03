@@ -9,6 +9,7 @@ from django.shortcuts import render
 from django.views.generic import View
 
 from games.models import Team
+from games.presentation import GamePresenter
 from players.forms import UserForm
 from players.forms import PlayerForm
 from players.models import Player
@@ -22,7 +23,7 @@ class HomeView(View):
         if request.user.is_authenticated():
             player = Player.objects.get(user=request.user)
             teams = Team.objects.filter(player=player)
-            context['games'] = [team.game for team in teams if team.alive]
+            context['games'] = [GamePresenter.from_game(team.game) for team in teams if team.alive]
         return render(request, self.template_name, context)
 
 
