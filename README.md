@@ -1,3 +1,5 @@
+![Could not fetch build status.](https://travis-ci.org/RuairiD/django-battleships.svg?branch=master)
+
 # django-battleships
 A multiplayer game of Battleships using the Django framework.
 
