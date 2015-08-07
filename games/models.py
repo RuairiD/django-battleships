@@ -10,9 +10,9 @@ class Game(models.Model):
     turn = models.IntegerField(default=0)
 
     def __str__(self):
-        result = '{} - '.format(self.id)
+        result = '{} -'.format(self.id)
         for team in self.team_set.all():
-            result +='{} '.format(
+            result +=' {}'.format(
                 team.player.user.username
             )
         return result
