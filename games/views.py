@@ -231,7 +231,7 @@ class AttackView(View):
 
                 # Check for death
                 past_shot_tiles = set([
-                    (shot.x, shot.y)
+                    (past_shot.x, past_shot.y)
                     for past_shot in Shot.objects.filter(
                         game=game,
                         defending_team=other_team
