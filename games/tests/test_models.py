@@ -7,6 +7,7 @@ from games.models import Shot
 from games.models import Ship
 from players.models import Player
 
+
 class GamesModelsTestCase(TestCase):
 
     def setUp(self):
@@ -53,8 +54,16 @@ class GamesModelsTestCase(TestCase):
         game = Game()
         game.save()
 
-        attacking_user = User.objects.create_user('attacking_user', '', 'password')
-        defending_user = User.objects.create_user('defending_user', '', 'password')
+        attacking_user = User.objects.create_user(
+            'attacking_user',
+            '',
+            'password'
+        )
+        defending_user = User.objects.create_user(
+            'defending_user',
+            '',
+            'password'
+        )
         attacking_user.save()
         defending_user.save()
 
@@ -77,7 +86,10 @@ class GamesModelsTestCase(TestCase):
         )
 
         self.assertTrue(isinstance(shot, Shot))
-        self.assertEqual(str(shot), 'Game 1 - attacking_user attacked defending_user (0, 0)')
+        self.assertEqual(
+            str(shot),
+            'Game 1 - attacking_user attacked defending_user (0, 0)'
+        )
 
     def test_ship_creation(self):
         """Test that Ship instances are created correctly."""
@@ -102,4 +114,7 @@ class GamesModelsTestCase(TestCase):
         )
 
         self.assertTrue(isinstance(ship, Ship))
-        self.assertEqual(str(ship), 'Game 1 - user\'s 3L at (0, 0) facing West')
+        self.assertEqual(
+            str(ship),
+            'Game 1 - user\'s 3L at (0, 0) facing West'
+        )
