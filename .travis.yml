@@ -6,4 +6,4 @@ install:
 before_script:
   - flake8 ./
 script:
-  - python setup.py test
+  - python manage.py test
