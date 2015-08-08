@@ -56,6 +56,10 @@ class SignupView(View):
             player = Player(user=user)
             player.save()
 
+            user = authenticate(
+                username=user_form.cleaned_data['username'],
+                password=user_form.cleaned_data['password']
+            )
             login(request, user)
 
             return HttpResponseRedirect('/')
