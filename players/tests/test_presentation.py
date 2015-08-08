@@ -43,7 +43,7 @@ class PlayerPresenterTestCase(TestCase):
         self.losing_team.save()
         self.in_progress_team.save()
 
-    def test_player(self):
+    def test_from_player(self):
         presenter = PlayerPresenter.from_player(self.player)
 
         self.assertEqual(presenter.username, self.user.username)
