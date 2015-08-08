@@ -17,6 +17,15 @@
     padding: 0.2em;
 }
 
+.board-key {
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+.board-key td {
+    padding: 0.2em;
+}
+
 .tile-hit {
     color: #FF0000;
 }
@@ -29,8 +38,4 @@
 .tile-occupied.tile-hit {
     background-color: #000000;
     color: #FF0000;
-}
-
-.game-key td {
-    padding: 0.2em;
 }
