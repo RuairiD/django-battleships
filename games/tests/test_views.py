@@ -92,3 +92,103 @@ class GameViewTestCase(TestCase):
         resp = self.client.get(url)
 
         self.assertEqual(resp.status_code, 404)
+
+
+class CreateGameViewTestCase(TestCase):
+
+    def setUp(self):
+        self.user1 = User.objects.create_user('user1', '', 'password')
+        self.user2 = User.objects.create_user('user2', '', 'password')
+        self.user3 = User.objects.create_user('user3', '', 'password')
+
+        self.player1 = Player(user=self.user1)
+        self.player2 = Player(user=self.user2)
+        self.player3 = Player(user=self.user3)
+        self.player1.save()
+        self.player2.save()
+        self.player3.save()
+
+    def test_get(self):
+        url = reverse('create_game')
+        resp = self.client.get(url)
+
+        self.assertEqual(resp.status_code, 200)
+        pq = PyQuery(resp.content)
+
+        # Assert there's a field for entering a username
+        self.assertEqual(len(pq('[name="opponent_username_0"]')), 1)
+
+    def test_post_logged_out(self):
+        url = reverse('create_game')
+        resp = self.client.post(url, {
+            'opponent_username_0': self.user2.username
+        })
+
+        self.assertEqual(resp.status_code, 302)
+        self.assertRedirects(resp, reverse('login'))
+
+    def test_post_logged_in_invalid_username(self):
+        self.client.login(
+            username=self.user1.username,
+            password='password'
+        )
+
+        url = reverse('create_game')
+        resp = self.client.post(url, {
+            'opponent_username_0': 'nonexistantuser'
+        })
+
+        self.assertEqual(resp.status_code, 200)
+        pq = PyQuery(resp.content)
+
+        # Assert error is shown
+        self.assertEqual(len(pq('.alert-danger')), 1)
+        self.assertIn('User does not exist', pq('.alert-danger').text())
+
+    def test_post_logged_in_valid_username(self):
+        self.client.login(
+            username=self.user1.username,
+            password='password'
+        )
+
+        url = reverse('create_game')
+        resp = self.client.post(url, {
+            'opponent_username_0': self.user2.username
+        })
+
+        game = Game.objects.all().order_by('-id')[0]
+        teams = game.team_set.all()
+        team_names = [team.player.user.username for team in teams]
+
+        self.assertRedirects(
+            resp,
+            reverse('game', args=[game.id])
+        )
+        self.assertEqual(len(teams), 2)
+        self.assertIn(self.user1.username, team_names)
+        self.assertIn(self.user2.username, team_names)
+
+    def test_post_logged_in_multiple_username(self):
+        self.client.login(
+            username=self.user1.username,
+            password='password'
+        )
+
+        url = reverse('create_game')
+        resp = self.client.post(url, {
+            'opponent_username_0': self.user2.username,
+            'opponent_username_1': self.user3.username
+        })
+
+        game = Game.objects.all().order_by('-id')[0]
+        teams = game.team_set.all()
+        team_names = [team.player.user.username for team in teams]
+
+        self.assertRedirects(
+            resp,
+            reverse('game', args=[game.id])
+        )
+        self.assertEqual(len(teams), 3)
+        self.assertIn(self.user1.username, team_names)
+        self.assertIn(self.user2.username, team_names)
+        self.assertIn(self.user3.username, team_names)
