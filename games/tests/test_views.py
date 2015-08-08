@@ -57,11 +57,11 @@ class GameViewTestCase(TestCase):
         pq = PyQuery(resp.content)
 
         # Assert we have one board for each player
-        self.assertEqual(pq('.board').length, 2)
+        self.assertEqual(len(pq('.board')), 2)
         self.assertIn('user1\'s board', pq('.board h3').text())
         self.assertIn('user2\'s board', pq('.board h3').text())
         # Assert the player is given an attack form
-        self.assertEqual(pq('#attack-form').length, 1)
+        self.assertEqual(len(pq('#attack-form')), 1)
 
     def test_logged_in_playing_not_current_turn(self):
         self.client.login(
@@ -76,11 +76,11 @@ class GameViewTestCase(TestCase):
         pq = PyQuery(resp.content)
 
         # Assert we have one board for each player
-        self.assertEqual(pq('.board').length, 2)
+        self.assertEqual(len(pq('.board')), 2)
         self.assertIn('user1\'s board', pq('.board h3').text())
         self.assertIn('user2\'s board', pq('.board h3').text())
         # Assert the player is not given an attack form
-        self.assertEqual(pq('#attack-form').length, 0)
+        self.assertEqual(len(pq('#attack-form')), 0)
 
     def test_logged_in_not_playing(self):
         self.client.login(
