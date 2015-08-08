@@ -6,7 +6,7 @@
 {% block content %}
 {% for team in teams %}
     <div class="board">
-        <h3>{{ team.player.user.username }}'s board{% if team.winner %} - Winner!{% elif not team.alive %} - defeated{% endif %}</h3>
+        <h3>{{ team.player.username }}'s board{% if team.winner %} - Winner!{% elif not team.alive %} - defeated{% endif %}</h3>
         <div class="well">
             {% if team.player.user == request.user %}
                 {% render_player_board team %}
