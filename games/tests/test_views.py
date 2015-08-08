@@ -5,8 +5,6 @@ from pyquery import PyQuery
 
 from games.models import Game
 from games.models import Team
-from games.models import Shot
-from games.models import Ship
 from players.models import Player
 
 

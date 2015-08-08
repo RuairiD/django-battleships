@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -14,6 +13,7 @@ from players.forms import UserForm
 from players.forms import PlayerForm
 from players.models import Player
 
+
 class HomeView(View):
 
     template_name = 'base/home.html'
@@ -23,7 +23,10 @@ class HomeView(View):
         if request.user.is_authenticated():
             player = Player.objects.get(user=request.user)
             teams = Team.objects.filter(player=player)
-            context['games'] = [GamePresenter.from_game(team.game) for team in teams if team.alive]
+            context['games'] = [
+                GamePresenter.from_game(team.game)
+                for team in teams if team.alive
+            ]
         return render(request, self.template_name, context)
 
 
@@ -82,10 +85,16 @@ class LoginView(View):
                 login(request, user)
                 return HttpResponseRedirect('/')
             else:
-                messages.error(request, 'Your account is disabled.')
+                messages.error(
+                    request,
+                    'Your account is disabled.'
+                )
                 return render(request, self.template_name, context)
         else:
-            messages.error(request, 'Your username and/or password is incorrect.')
+            messages.error(
+                request,
+                'Your username and/or password is incorrect.'
+            )
             return render(request, self.template_name, context)
 
 

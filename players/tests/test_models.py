@@ -3,6 +3,7 @@ from django.test import TestCase
 
 from players.models import Player
 
+
 class PlayersModelsTestCase(TestCase):
 
     def setUp(self):
@@ -17,4 +18,3 @@ class PlayersModelsTestCase(TestCase):
 
         self.assertTrue(isinstance(player, Player))
         self.assertEqual(str(player), 'user')
-        

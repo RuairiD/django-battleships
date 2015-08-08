@@ -6,17 +6,26 @@ from games.util import is_team_next
 from players.presentation import PlayerPresenter
 
 
-class GamePresenter(namedtuple('GamePresenter', ['id', 'teams'])):
+class GamePresenter(namedtuple(
+    'GamePresenter',
+    ['id', 'teams']
+)):
 
     @classmethod
     def from_game(cls, game):
         return cls(
             id=game.id,
-            teams=[TeamPresenter.from_team(team, game) for team in game.team_set.all()],
+            teams=[
+                TeamPresenter.from_team(team, game)
+                for team in game.team_set.all()
+            ]
         )
 
 
-class TeamPresenter(namedtuple('TeamPresenter', ['player', 'is_next', 'winner', 'alive', 'tiles'])):
+class TeamPresenter(namedtuple(
+    'TeamPresenter',
+    ['player', 'is_next', 'winner', 'alive', 'tiles']
+)):
 
     @staticmethod
     def make_tiles(team, game):
@@ -24,7 +33,14 @@ class TeamPresenter(namedtuple('TeamPresenter', ['player', 'is_next', 'winner', 
         for y in range(0, GAME_SIZE):
             row = []
             for x in range(0, GAME_SIZE):
-                row.append(TilePresenter.from_team(x, y, team, game))
+                row.append(
+                    TilePresenter.from_team(
+                        x=x,
+                        y=y,
+                        team=team,
+                        game=game
+                    )
+                )
             tiles.append(row)
         return tiles
 
@@ -39,7 +55,10 @@ class TeamPresenter(namedtuple('TeamPresenter', ['player', 'is_next', 'winner', 
         )
 
 
-class TilePresenter(namedtuple('TilePresenter', ['x', 'y', 'name', 'is_empty', 'is_hit'])):
+class TilePresenter(namedtuple(
+    'TilePresenter',
+    ['x', 'y', 'name', 'is_empty', 'is_hit']
+)):
 
     @classmethod
     def from_team(cls, x, y, team, game):
@@ -51,7 +70,7 @@ class TilePresenter(namedtuple('TilePresenter', ['x', 'y', 'name', 'is_empty', '
         shots = Shot.objects.filter(game=game, defending_team=team)
         is_hit = (x, y) in [(shot.x, shot.y) for shot in shots]
 
-        x_letter=chr(x + ord('A'))
+        x_letter = chr(x + ord('A'))
         name = '{}{}'.format(x_letter, y)
 
         return cls(

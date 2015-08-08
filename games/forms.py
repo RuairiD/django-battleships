@@ -1,5 +1,6 @@
 from django import forms
 
+
 class CreateGameForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
@@ -19,14 +20,14 @@ class CreateGameForm(forms.Form):
 
 
 class AttackForm(forms.Form):
-    
+
     X_CHOICES = (
-        (x, chr(x + ord('A'))) 
-        for x in range(0,10)
+        (x, chr(x + ord('A')))
+        for x in range(0, 10)
     )
     Y_CHOICES = (
-        (y, str(y)) 
-        for y in range(0,10)
+        (y, str(y))
+        for y in range(0, 10)
     )
     target_x = forms.ChoiceField(choices=X_CHOICES)
     target_y = forms.ChoiceField(choices=Y_CHOICES)
@@ -42,7 +43,7 @@ class AttackForm(forms.Form):
         }
         self.fields['target_team'] = forms.ChoiceField(
             choices=(
-                (team.id, team.player.user.username) 
+                (team.id, team.player.user.username)
                 for team in other_teams
             )
         )

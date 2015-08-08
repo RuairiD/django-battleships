@@ -40,7 +40,13 @@ class GameView(View):
             if player_team is None:
                 raise Http404("Player is not authorised.")
 
-            team_presenters = [TeamPresenter.from_team(team, game) for team in teams]
+            team_presenters = [
+                TeamPresenter.from_team(
+                    team,
+                    game
+                )
+                for team in teams
+            ]
             is_player_next = is_team_next(player_team, game)
 
             other_teams = []
@@ -77,17 +83,26 @@ class CreateGameView(View):
             if form.is_valid():
                 opponent_usernames = []
                 for i in range(0, MAX_PLAYERS):
-                    opponent_usernames.append(form.cleaned_data['opponent_username_{}'.format(i)])
+                    field_name = 'opponent_username_{}'.format(i)
+                    opponent_usernames.append(
+                        form.cleaned_data[field_name]
+                    )
 
                 try:
                     opponent_users = []
                     for opponent_username in opponent_usernames:
                         if len(opponent_username) > 0:
-                             opponent_users.append(User.objects.get(username=opponent_username))
+                            opponent_users.append(
+                                User.objects.get(
+                                    username=opponent_username
+                                )
+                            )
                 except User.DoesNotExist:
+                    error_message = 'User does not exist! '\
+                        'Are you sure the username is correct?'
                     messages.error(
                         request,
-                        'User does not exist! Are you sure the username is correct?'
+                        error_message
                     )
                     context = {
                         'form': form
@@ -95,15 +110,27 @@ class CreateGameView(View):
                     return render(request, self.template_name, context)
 
                 user_player = Player.objects.get(user=request.user)
-                opponent_players = [Player.objects.get(user=opponent_user) for opponent_user in opponent_users]
+                opponent_players = [
+                    Player.objects.get(
+                        user=opponent_user
+                    )
+                    for opponent_user in opponent_users
+                ]
 
                 # Create a game plus teams and ships for both players
-                # Creation in Game -> Team -> Ships order is important to satisfy
-                # ForeignKey dependencies.
+                # Creation in Game -> Team -> Ships order is important
+                # to satisfy ForeignKey dependencies.
                 game = Game()
                 game.save()
                 user_team = Team(player=user_player, game=game, last_turn=-2)
-                opponent_teams = [Team(player=opponent_player, game=game, last_turn=-1) for opponent_player in opponent_players]
+                opponent_teams = [
+                    Team(
+                        player=opponent_player,
+                        game=game,
+                        last_turn=-1
+                    )
+                    for opponent_player in opponent_players
+                ]
                 user_team.save()
                 for opponent_team in opponent_teams:
                     opponent_team.save()
@@ -130,7 +157,6 @@ class CreateGameView(View):
 class AttackView(View):
 
     def post(self, request, game_id, *args, **kwargs):
-        errors = []
         if request.user.is_authenticated():
             try:
                 game = Game.objects.get(pk=game_id)
@@ -178,7 +204,9 @@ class AttackView(View):
 
                 if len(past_shots) > 0:
                     messages.error(request, 'You\'ve already shot there!')
-                    return HttpResponseRedirect(reverse('game', args=[game_id]))
+                    return HttpResponseRedirect(
+                        reverse('game', args=[game_id])
+                    )
 
                 shot = Shot(
                     game=game,
@@ -202,12 +230,15 @@ class AttackView(View):
                 other_team_hit = (int(target_x), int(target_y)) in ship_tiles
 
                 # Check for death
-                shots = Shot.objects.filter(
-                    game=game,
-                    defending_team=other_team
-                )
-                shots = set([(shot.x, shot.y) for shot in shots])
-                if len(shots.intersection(ship_tiles)) == len(ship_tiles):
+                past_shot_tiles = set([
+                    (shot.x, shot.y)
+                    for past_shot in Shot.objects.filter(
+                        game=game,
+                        defending_team=other_team
+                    )
+                ])
+                hit_tiles = past_shot_tiles.intersection(ship_tiles)
+                if len(hit_tiles) == len(ship_tiles):
                     other_team.alive = False
                     other_team.save()
                 other_team_defeated = not other_team.alive
@@ -221,7 +252,12 @@ class AttackView(View):
                 if other_team_hit:
                     messages.success(request, 'Hit!')
                     if other_team_defeated:
-                        messages.success(request, 'You defeated {name}!'.format(name=other_team.player.user.username))
+                        messages.success(
+                            request,
+                            'You defeated {name}!'.format(
+                                name=other_team.player.user.username
+                            )
+                        )
                 else:
                     messages.warning(request, 'Miss!')
                 return HttpResponseRedirect(reverse('game', args=[game_id]))

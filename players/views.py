@@ -3,10 +3,9 @@ from django.http import Http404
 from django.shortcuts import render
 from django.views.generic import View
 
-from games.models import Game
-from games.models import Team
 from players.models import Player
 from players.presentation import PlayerPresenter
+
 
 class PlayerProfileView(View):
 

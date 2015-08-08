@@ -5,6 +5,7 @@ from players.models import Player
 GAME_SIZE = 10
 MAX_PLAYERS = 4
 
+
 class Game(models.Model):
     """Model containing information on a single game of Battleships."""
     turn = models.IntegerField(default=0)
@@ -12,7 +13,7 @@ class Game(models.Model):
     def __str__(self):
         result = '{} -'.format(self.id)
         for team in self.team_set.all():
-            result +=' {}'.format(
+            result += ' {}'.format(
                 team.player.user.username
             )
         return result
@@ -26,9 +27,13 @@ class Team(models.Model):
 
     winner = models.BooleanField(default=False)
     alive = models.BooleanField(default=True)
-    
+
     def __str__(self):
-        return 'Game {} - {} (last_turn={})'.format(self.game.id, self.player.user.username, self.last_turn)
+        return 'Game {} - {} (last_turn={})'.format(
+            self.game.id,
+            self.player.user.username,
+            self.last_turn
+        )
 
 
 class Shot(models.Model):
@@ -39,15 +44,16 @@ class Shot(models.Model):
 
     x = models.IntegerField()
     y = models.IntegerField()
-    
+
     def __str__(self):
-        return 'Game {game_id} - {attacking_team} attacked {defending_team} ({x}, {y})'.format(
-            game_id=self.game.id, 
-            attacking_team=self.attacking_team.player.user.username,
-            defending_team=self.defending_team.player.user.username,
-            x=self.x,
-            y=self.y
-        )
+        return 'Game {game_id} - '\
+            '{attacking_team} attacked {defending_team} ({x}, {y})'.format(
+                game_id=self.game.id,
+                attacking_team=self.attacking_team.player.user.username,
+                defending_team=self.defending_team.player.user.username,
+                x=self.x,
+                y=self.y
+            )
 
 
 class Ship(models.Model):
@@ -76,16 +82,17 @@ class Ship(models.Model):
     )
 
     direction = models.IntegerField(choices=DIRECTION_CHOICES)
-    
+
     def __str__(self):
-        return 'Game {game_id} - {team}\'s {length}L at ({x}, {y}) facing {direction}'.format(
-            game_id=self.team.game.id, 
-            team=self.team.player.user.username,
-            length=self.length,
-            x=self.x,
-            y=self.y,
-            direction=self.DIRECTION_CHOICES[self.direction][1]
-        )
+        return 'Game {game_id} - {team}\'s {length}L '\
+            'at ({x}, {y}) facing {direction}'.format(
+                game_id=self.team.game.id,
+                team=self.team.player.user.username,
+                length=self.length,
+                x=self.x,
+                y=self.y,
+                direction=self.DIRECTION_CHOICES[self.direction][1]
+            )
 
     def get_tiles(self):
         """Returns a list of all tiles occupied by a ship."""
