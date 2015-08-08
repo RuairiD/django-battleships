@@ -62,6 +62,13 @@ class TeamPresenterTestCase(TestCase):
         self.assertEqual(len(presenter.tiles), GAME_SIZE)
         self.assertEqual(len(presenter.tiles[0]), GAME_SIZE)
 
+    def test_make_tiles(self):
+        tiles = TeamPresenter.make_tiles(team=self.team, game=self.game)
+
+        self.assertEqual(len(tiles), GAME_SIZE)
+        for i in range(0, GAME_SIZE):
+            self.assertEqual(len(tiles[i]), GAME_SIZE)
+
 
 class TilePresenterTestCase(TestCase):
 
