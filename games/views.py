@@ -116,7 +116,7 @@ class CreateGameView(View):
                     for opponent_ship in opponent_ships:
                         opponent_ship.save()
 
-                return HttpResponseRedirect('/games/{id}'.format(id=game.id))
+                return HttpResponseRedirect(reverse('game', args=[game.id]))
             else:
                 messages.error(request, 'Invalid form.')
                 context = {
