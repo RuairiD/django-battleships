@@ -15,7 +15,7 @@ def are_ships_overlapping(ship1, ship2):
 
 def is_team_next(team, game):
     """Checks if it is a team's turn to move next."""
-    alive_teams = game.team_set.filter(alive=True)
+    alive_teams = game.teams.filter(alive=True)
     return (team == min(alive_teams, key=lambda team: team.last_turn))
 
 

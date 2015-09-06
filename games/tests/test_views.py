@@ -157,7 +157,7 @@ class CreateGameViewTestCase(TestCase):
         })
 
         game = Game.objects.all().order_by('-id')[0]
-        teams = game.team_set.all()
+        teams = game.teams.all()
         team_names = [team.player.user.username for team in teams]
 
         self.assertRedirects(
@@ -181,7 +181,7 @@ class CreateGameViewTestCase(TestCase):
         })
 
         game = Game.objects.all().order_by('-id')[0]
-        teams = game.team_set.all()
+        teams = game.teams.all()
         team_names = [team.player.user.username for team in teams]
 
         self.assertRedirects(

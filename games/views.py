@@ -31,7 +31,7 @@ class GameView(View):
 
         if request.user.is_authenticated():
             player = Player.objects.get(user=request.user)
-            teams = game.team_set.all()
+            teams = game.teams.all()
 
             player_team = None
             for team in teams:
@@ -166,7 +166,7 @@ class AttackView(View):
             player = Player.objects.get(user=request.user)
 
             # Verify the player is involved in this game
-            teams = game.team_set.all()
+            teams = game.teams.all()
             player_team = None
             for team in teams:
                 if team.player == player:
@@ -225,7 +225,7 @@ class AttackView(View):
 
                 # Check for hit
                 ship_tiles = set()
-                for ship in other_team.ship_set.all():
+                for ship in other_team.ships.all():
                     ship_tiles.update(set(ship.get_tiles()))
                 other_team_hit = (int(target_x), int(target_y)) in ship_tiles
 
@@ -244,7 +244,7 @@ class AttackView(View):
                 other_team_defeated = not other_team.alive
 
                 # Check for winner
-                alive_teams = game.team_set.filter(alive=True)
+                alive_teams = game.teams.filter(alive=True)
                 if len(alive_teams) == 1:
                     alive_teams[0].winner = True
                     alive_teams[0].save()

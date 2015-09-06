@@ -17,7 +17,7 @@ class GamePresenter(namedtuple(
             id=game.id,
             teams=[
                 TeamPresenter.from_team(team, game)
-                for team in game.team_set.all()
+                for team in game.teams.all()
             ]
         )
 
@@ -63,7 +63,7 @@ class TilePresenter(namedtuple(
     @classmethod
     def from_team(cls, x, y, team, game):
         is_empty = True
-        for ship in team.ship_set.all():
+        for ship in team.ships.all():
             if (x, y) in ship.get_tiles():
                 is_empty = False
 

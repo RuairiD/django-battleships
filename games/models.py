@@ -12,7 +12,7 @@ class Game(models.Model):
 
     def __str__(self):
         result = '{} -'.format(self.id)
-        for team in self.team_set.all():
+        for team in self.teams.all():
             result += ' {}'.format(
                 team.player.user.username
             )
@@ -21,8 +21,8 @@ class Game(models.Model):
 
 class Team(models.Model):
     """Model containing Player information specific to a single Game."""
-    player = models.ForeignKey(Player)
-    game = models.ForeignKey(Game)
+    player = models.ForeignKey(Player, related_name='teams')
+    game = models.ForeignKey(Game, related_name='teams')
     last_turn = models.IntegerField(default=0)
 
     winner = models.BooleanField(default=False)
@@ -38,9 +38,9 @@ class Team(models.Model):
 
 class Shot(models.Model):
     """Model containing information of an attack."""
-    game = models.ForeignKey(Game)
-    attacking_team = models.ForeignKey(Team, related_name='attacking_team')
-    defending_team = models.ForeignKey(Team, related_name='defending_team')
+    game = models.ForeignKey(Game, related_name='shots')
+    attacking_team = models.ForeignKey(Team, related_name='shots')
+    defending_team = models.ForeignKey(Team, related_name='shots')
 
     x = models.IntegerField()
     y = models.IntegerField()
@@ -60,7 +60,7 @@ class Ship(models.Model):
     """Model containing information of a single ship on the game board."""
     LENGTHS = [2, 3, 3, 4, 5]
 
-    team = models.ForeignKey(Team)
+    team = models.ForeignKey(Team, related_name='ships')
 
     x = models.IntegerField()
     y = models.IntegerField()
