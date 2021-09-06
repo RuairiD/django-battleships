@@ -21,8 +21,10 @@ class Game(models.Model):
 
 class Team(models.Model):
     """Model containing Player information specific to a single Game."""
-    player = models.ForeignKey(Player, related_name='teams')
-    game = models.ForeignKey(Game, related_name='teams')
+    player = models.ForeignKey(Player, related_name='teams',
+            on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, related_name='teams',
+            on_delete=models.CASCADE)
     last_turn = models.IntegerField(default=0)
 
     winner = models.BooleanField(default=False)
@@ -38,9 +40,12 @@ class Team(models.Model):
 
 class Shot(models.Model):
     """Model containing information of an attack."""
-    game = models.ForeignKey(Game, related_name='shots')
-    attacking_team = models.ForeignKey(Team, related_name='shots')
-    defending_team = models.ForeignKey(Team, related_name='shots')
+    game = models.ForeignKey(Game, related_name='shots',
+            on_delete=models.CASCADE)
+    attacking_team = models.ForeignKey(Team, related_name='attacking_shots',
+            on_delete=models.CASCADE)
+    defending_team = models.ForeignKey(Team, related_name='defending_shots',
+            on_delete=models.CASCADE)
 
     x = models.IntegerField()
     y = models.IntegerField()
@@ -60,7 +65,8 @@ class Ship(models.Model):
     """Model containing information of a single ship on the game board."""
     LENGTHS = [2, 3, 3, 4, 5]
 
-    team = models.ForeignKey(Team, related_name='ships')
+    team = models.ForeignKey(Team, related_name='ships',
+            on_delete=models.CASCADE)
 
     x = models.IntegerField()
     y = models.IntegerField()

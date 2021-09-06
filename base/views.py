@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
@@ -20,7 +20,7 @@ class HomeView(View):
 
     def get(self, request, *args, **kwargs):
         context = {}
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             player = Player.objects.get(user=request.user)
             teams = Team.objects.filter(player=player)
             context['games'] = [
@@ -35,7 +35,7 @@ class SignupView(View):
     template_name = 'base/signup.html'
 
     def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return HttpResponseRedirect('/')
         else:
             user_form = UserForm()
