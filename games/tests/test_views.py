@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 from pyquery import PyQuery
 
@@ -270,9 +270,8 @@ class AttackViewTestCase(TestCase):
             'target_team': self.team2.id,
         }, follow=True)
 
-        game_url = 'http://testserver{}'.format(
-            reverse('game', args=[self.game.id])
-        )
+        game_url = reverse('game', args=[self.game.id])
+
         self.assertIn(
             (game_url, 302),
             resp.redirect_chain
@@ -297,9 +296,8 @@ class AttackViewTestCase(TestCase):
             'target_team': self.team2.id,
         }, follow=True)
 
-        game_url = 'http://testserver{}'.format(
-            reverse('game', args=[self.game.id])
-        )
+        game_url = reverse('game', args=[self.game.id])
+
         self.assertIn(
             (game_url, 302),
             resp.redirect_chain
@@ -333,9 +331,8 @@ class AttackViewTestCase(TestCase):
             'target_team': self.team2.id,
         }, follow=True)
 
-        game_url = 'http://testserver{}'.format(
-            reverse('game', args=[self.game.id])
-        )
+        game_url = reverse('game', args=[self.game.id])
+
         self.assertIn(
             (game_url, 302),
             resp.redirect_chain
@@ -369,9 +366,8 @@ class AttackViewTestCase(TestCase):
             'target_team': self.team2.id,
         }, follow=True)
 
-        game_url = 'http://testserver{}'.format(
-            reverse('game', args=[self.game.id])
-        )
+        game_url = reverse('game', args=[self.game.id])
+
         self.assertIn(
             (game_url, 302),
             resp.redirect_chain
@@ -405,9 +401,8 @@ class AttackViewTestCase(TestCase):
             'target_team': self.team2.id,
         }, follow=True)
 
-        game_url = 'http://testserver{}'.format(
-            reverse('game', args=[self.game.id])
-        )
+        game_url = reverse('game', args=[self.game.id])
+
         self.assertIn(
             (game_url, 302),
             resp.redirect_chain

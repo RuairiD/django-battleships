@@ -1,5 +1,5 @@
 from django import forms
-
+from django.core.exceptions import ValidationError
 
 class CreateGameForm(forms.Form):
 
@@ -29,8 +29,39 @@ class AttackForm(forms.Form):
         (y, str(y))
         for y in range(0, 10)
     )
-    target_x = forms.ChoiceField(choices=X_CHOICES)
-    target_y = forms.ChoiceField(choices=Y_CHOICES)
+
+    # Either target_x and target_y...
+    target_x = forms.ChoiceField(choices=X_CHOICES,
+            required=False)
+    target_y = forms.ChoiceField(choices=Y_CHOICES,
+            required=False)
+
+    # ...or target.
+    target = forms.CharField(max_length=2,
+            required=False)
+
+
+    def clean(self):
+
+        super(AttackForm, self).clean()
+
+        has_xy = 'target_x' and 'target_y' in self.cleaned_data
+        has_target = 'target' in self.cleaned_data
+
+        if has_xy != has_target:
+            raise ValidationError("You must pass either target_x and target_y, "
+                    "or target.")
+
+        if has_target:
+            target = self.cleaned_data['target'].upper()
+
+            if len(target)!=2:
+                raise ValidationError("target must be two characters long, "
+                        "e.g. 'A1'.")
+
+            self.cleaned_data['target_x'] = ord(target[0]) - ord('A')
+            self.cleaned_data['target_y'] = ord(target[1]) - ord('0')
+
 
     def __init__(self, *args, **kwargs):
         other_teams = kwargs.pop('other_teams')

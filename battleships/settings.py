@@ -51,16 +51,18 @@ LOCAL_APPS = (
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
-MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-)
+MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        ]
+
+AUTHENTICATION_BACKENDS = [
+        'django.contrib.auth.backends.AllowAllUsersModelBackend',
+        ]
 
 ROOT_URLCONF = 'battleships.urls'
 
@@ -124,10 +126,12 @@ MEDIA_ROOT = '{0}/media'.format(PROJECT_ROOT)
 
 # The URL that handles the media, static, etc.
 STATIC_URL = '/static/'
-MEDIA_URL = STATIC_URL + 'media/'
+MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = (
     '{0}/static_assets'.format(PROJECT_ROOT),
 )
 
 LOGIN_URL = '/login/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

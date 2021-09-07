@@ -24,7 +24,7 @@ class GamePresenter(namedtuple(
 
 class TeamPresenter(namedtuple(
     'TeamPresenter',
-    ['player', 'is_next', 'winner', 'alive', 'tiles']
+    ['id', 'player', 'is_next', 'winner', 'alive', 'tiles']
 )):
 
     @staticmethod
@@ -47,6 +47,7 @@ class TeamPresenter(namedtuple(
     @classmethod
     def from_team(cls, team, game):
         return cls(
+            id=team.id,
             player=PlayerPresenter.from_player(team.player),
             is_next=is_team_next(team, game),
             winner=team.winner,

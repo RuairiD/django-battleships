@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -29,7 +29,7 @@ class GameView(View):
         except Game.DoesNotExist:
             raise Http404("Game does not exist")
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             player = Player.objects.get(user=request.user)
             teams = game.teams.all()
 
@@ -54,11 +54,13 @@ class GameView(View):
                 if team is not player_team and team.alive:
                     other_teams.append(team)
 
+            if is_team_next(player_team, game):
+                messages.info(request, "It's your turn.")
+
             context = {
                 'game_id': game_id,
                 'player_team': TeamPresenter.from_team(player_team, game),
                 'teams': team_presenters,
-                'attack_form': AttackForm(other_teams=other_teams),
                 'is_player_next': is_player_next
             }
             return render(request, self.template_name, context)
@@ -78,7 +80,7 @@ class CreateGameView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             form = CreateGameForm(request.POST, max_players=MAX_PLAYERS)
             if form.is_valid():
                 opponent_usernames = []
@@ -157,7 +159,7 @@ class CreateGameView(View):
 class AttackView(View):
 
     def post(self, request, game_id, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             try:
                 game = Game.objects.get(pk=game_id)
             except Game.DoesNotExist:
