@@ -39,3 +39,11 @@
     background-color: #000000;
     color: #FF0000;
 }
+
+.board input {
+        display: inline;
+        background: none!important;
+        border: none;
+        padding: 0!important;
+        cursor: pointer;
+}

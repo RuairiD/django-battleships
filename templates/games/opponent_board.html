@@ -1,3 +1,7 @@
+<form action="{% url 'attack' game_id %}" method="post" id="attack-form" class="form-inline">
+    <input type="hidden" name="game_id" value="{{ game_id }}"></input>
+    <input type="hidden" name="target_team" value="{{ team.id }}"></input>
+
 <table>
     {{ tiles }}
     {% for row in team.tiles %}
@@ -10,9 +14,10 @@
                         <td class="tile-occupied tile-hit">{{ tile.name }}</td>
                     {% endif %}
                 {% else %}
-                    <td>{{ tile.name }}</td>
+                    <td><input type="submit" name="target" value="{{ tile.name }}"></input></td>
                 {% endif %}
             {% endfor %}
         </tr>
     {% endfor %}
 </table>
+</form>
