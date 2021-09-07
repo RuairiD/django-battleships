@@ -1,6 +1,5 @@
 {% extends 'base/base.html' %}
 
-{% load attack_form %}
 {% load game_board %}
 
 {% block content %}
@@ -9,9 +8,9 @@
         <h3>{{ team.player.username }}'s board{% if team.winner %} - Winner!{% elif not team.alive %} - defeated{% endif %}</h3>
         <div class="well">
             {% if team.player.username == request.user.get_username %}
-                {% render_player_board team %}
+                {% render_player_board team game_id %}
             {% else %}
-                {% render_opponent_board team %}
+                {% render_opponent_board team game_id %}
             {% endif %}
         </div>
     </div>
@@ -45,9 +44,5 @@
             {{ message|safe }}
         </div>
     {% endfor %}
-{% endif %}
-{% if is_player_next %}
-    <h3>It's your turn...</h3>
-    {% render_attack_form attack_form game_id %}
 {% endif %}
 {% endblock %}

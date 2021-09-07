@@ -54,11 +54,13 @@ class GameView(View):
                 if team is not player_team and team.alive:
                     other_teams.append(team)
 
+            if is_team_next(player_team, game):
+                messages.info(request, "It's your turn.")
+
             context = {
                 'game_id': game_id,
                 'player_team': TeamPresenter.from_team(player_team, game),
                 'teams': team_presenters,
-                'attack_form': AttackForm(other_teams=other_teams),
                 'is_player_next': is_player_next
             }
             return render(request, self.template_name, context)
